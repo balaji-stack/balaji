@@ -1,0 +1,278 @@
+https://chatgpt.com/share/67f67317-89b4-8001-aa06-4e263342ee17
+
+base
+
+Jenkins script file:
+
+pipeline {
+    agent any
+
+    environment {
+        DEPLOY_PATH = '/var/www/html/mywebsite/balaji'
+        BACKUP_BASE = '/var/tmp/backups'
+        TARBALL = 'changes.tar.gz'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/balaji-stack/balaji.git'
+            }
+        }
+
+        stage('Create Incremental Tar') {
+            steps {
+                script {
+                    sh '''
+                    PREV_COMMIT=$(git rev-parse HEAD~1)
+                    CURR_COMMIT=$(git rev-parse HEAD)
+
+                    git diff --name-only $PREV_COMMIT $CURR_COMMIT > changed_files.txt || echo ""
+
+                    echo "Changed files:"
+                    cat changed_files.txt
+
+                    if grep -q "^index.html$" changed_files.txt; then
+                        tar -czf $TARBALL index.html
+                        echo "index.html updated and packaged."
+                    else
+                        echo "No relevant changes to package."
+                        rm -f $TARBALL
+                    fi
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Apache Server') {
+            steps {
+                script {
+                    sh '''
+                    if [ -f "$TARBALL" ]; then
+                        TIMESTAMP=$(date +%F_%H-%M-%S)
+                        BACKUP_TAR="$BACKUP_BASE/index-backup_$TIMESTAMP.tar.gz"
+
+                        # Ensure backup directory exists
+                        sudo mkdir -p "$BACKUP_BASE"
+
+                        # Create timestamped tar.gz backup
+                        if [ -f "$DEPLOY_PATH/index.html" ]; then
+                            sudo tar -czf "$BACKUP_TAR" -C "$DEPLOY_PATH" index.html
+                            echo "Backup of index.html created at $BACKUP_TAR"
+                        else
+                            echo "No existing index.html to backup"
+                        fi
+
+                        # Deploy new changes
+                        sudo tar -xzf "$TARBALL" -C "$DEPLOY_PATH"
+                        sudo chown -R www-data:www-data $DEPLOY_PATH
+                        sudo chmod -R 755 $DEPLOY_PATH
+                        sudo systemctl restart apache2
+                        echo "Deployment complete."
+                    else
+                        echo "No changes detected. Deployment skipped."
+                    fi
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '*.tar.gz', fingerprint: true
+        }
+    }
+}
+
+
+Add this command :- cat changed_files.txt | wc -l  #in case any changes in changed_files.txt as output 0<1 start the process in git diff --name-only $PREV_COMMIT $CURR_COMMIT > changed_files.txt || echo "  ,  if no changes ouput is 0 no backup and stop the process in command git diff --name-only $PREV_COMMIT $CURR_COMMIT > changed_files.txt || echo " as no changes in wc 0:q
+
+
+
+
+stat index.html
+
+pipeline {
+    agent any
+
+    environment {
+        DEPLOY_PATH = '/var/www/html/mywebsite/balaji'
+        BACKUP_BASE = '/var/tmp/backups'
+        TARBALL = 'changes.tar.gz'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/balaji-stack/balaji.git'
+            }
+        }
+
+        stage('Check Changes and Create Tar') {
+            steps {
+                script {
+                    sh '''
+                    PREV_COMMIT=$(git rev-parse HEAD~1)
+                    CURR_COMMIT=$(git rev-parse HEAD)
+
+                    echo "Checking file status using stat:"
+                    stat index.html || true
+
+                    git diff --name-only $PREV_COMMIT $CURR_COMMIT > changed_files.txt || echo ""
+
+                    echo "Changed files:"
+                    cat changed_files.txt
+
+                    if grep -q "^index.html$" changed_files.txt; then
+                        tar -czf $TARBALL index.html
+                        echo "index.html updated and packaged."
+                    else
+                        echo "No relevant changes to package. Exiting build early."
+                        rm -f $TARBALL
+                        exit 0
+                    fi
+                    '''
+                }
+            }
+        }
+
+        stage('Backup and Deploy') {
+            when {
+                expression {
+                    // Proceed only if the tarball exists
+                    return fileExists(env.TARBALL)
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                    TIMESTAMP=$(date +%F_%H-%M-%S)
+                    BACKUP_TAR="$BACKUP_BASE/balaji-backup_$TIMESTAMP.tar.gz"
+
+                    # Ensure backup directory exists
+                    sudo mkdir -p "$BACKUP_BASE"
+
+                    # Backup the entire balaji directory
+                    if [ -d "$DEPLOY_PATH" ]; then
+                        sudo tar -czf "$BACKUP_TAR" -C "$(dirname "$DEPLOY_PATH")" "$(basename "$DEPLOY_PATH")"
+                        echo "Backup of balaji directory created at $BACKUP_TAR"
+                    else
+                        echo "Directory $DEPLOY_PATH not found for backup."
+                    fi
+
+                    # Deploy updated file
+                    sudo tar -xzf "$TARBALL" -C "$DEPLOY_PATH"
+                    sudo chown -R www-data:www-data $DEPLOY_PATH
+                    sudo chmod -R 755 $DEPLOY_PATH
+                    sudo systemctl restart apache2
+                    echo "Deployment complete."
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '*.tar.gz', fingerprint: true
+        }
+    }
+}
+
+
+cat wc -l
+
+In jenkins script :
+
+pipeline {
+    agent any
+
+    environment {
+        DEPLOY_PATH = '/var/www/html/mywebsite/balaji'
+        BACKUP_BASE = '/var/tmp/backups'
+        TARBALL = 'changes.tar.gz'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/balaji-stack/balaji.git'
+            }
+        }
+
+        stage('Create Incremental Tar') {
+            steps {
+                script {
+                    sh '''
+                    PREV_COMMIT=$(git rev-parse HEAD~1)
+                    CURR_COMMIT=$(git rev-parse HEAD)
+
+                    git diff --name-only $PREV_COMMIT $CURR_COMMIT > changed_files.txt || echo ""
+
+                    echo "Changed files:"
+                    cat changed_files.txt
+
+                    CHANGE_COUNT=$(cat changed_files.txt | wc -l)
+                    echo "Number of changed files: $CHANGE_COUNT"
+
+                    if [ "$CHANGE_COUNT" -lt 1 ]; then
+                        echo "No changes detected. Skipping packaging and deployment."
+                        exit 0
+                    fi
+
+                    if grep -q "^index.html$" changed_files.txt; then
+                        tar -czf $TARBALL index.html
+                        echo "index.html updated and packaged."
+                    else
+                        echo "index.html not changed. No relevant files to package."
+                        rm -f $TARBALL
+                        exit 0
+                    fi
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Apache Server') {
+            when {
+                expression { fileExists(env.TARBALL) }
+            }
+            steps {
+                script {
+                    sh '''
+                    TIMESTAMP=$(date +%F_%H-%M-%S)
+                    BACKUP_TAR="$BACKUP_BASE/balaji-backup_$TIMESTAMP.tar.gz"
+
+                    # Ensure backup directory exists
+                    sudo mkdir -p "$BACKUP_BASE"
+
+                    # Backup entire balaji directory instead of just index.html
+                    if [ -d "$DEPLOY_PATH" ]; then
+                        sudo tar -czf "$BACKUP_TAR" -C "$(dirname "$DEPLOY_PATH")" "$(basename "$DEPLOY_PATH")"
+                        echo "Backup of balaji directory created at $BACKUP_TAR"
+                    else
+                        echo "balaji directory does not exist. Skipping backup."
+                    fi
+
+                    # Deploy new changes
+                    sudo tar -xzf "$TARBALL" -C "$DEPLOY_PATH"
+                    sudo chown -R www-data:www-data $DEPLOY_PATH
+                    sudo chmod -R 755 $DEPLOY_PATH
+                    sudo systemctl restart apache2
+                    echo "Deployment complete."
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '*.tar.gz', fingerprint: true
+        }
+    }
+}
+
+
+in above jenkins script,  remove the command and function of cat changed | wc -l 
