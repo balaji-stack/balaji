@@ -1,0 +1,116 @@
+.mobile_header_wrapper {
+	display: none;
+	background: #ffffff;
+	width: 100%;
+	padding: 0 15px;
+	height: 65px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9999;
+    @media only screen and (max-width: 1199px){
+        display: block;
+        height: 48px;
+    }
+	>.container-fluid {
+		height: 100%;
+	}
+	.mob_nav {
+		height: 100%;
+		>.row {
+			align-items: center;
+			height: 100%;
+		}
+		.mob_tog {
+			position: relative;
+			width: 30px;
+			height: 18px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			align-items: flex-end;
+			padding: 0;
+			border: 0;
+			background: none;
+			span {
+				display: block;
+				clear: both;
+				width: 30px;
+				height: 2px;
+				background: #0069ba;
+			}
+			span.tog_shape2 {
+				width: 90%;
+			}
+		}
+		.logo_a {
+			display: block;
+			width: 180px;
+			margin: 0 auto;
+		}
+		.nav_menus_mob {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			pointer-events: all;
+			li {
+				margin-right: 15px;
+				&:last-child {
+					margin-right: 0;
+				}
+				.user_tog {
+					width: 25px;
+					background: none;
+					padding: 0;
+					border: none;
+					position: relative;
+					top: 2px;
+				}
+			}
+		}
+	}
+}
+.nav_menus_mob {
+	li {
+		.dropdown-menu {
+			border: 1px solid #d1d1d1;
+			border-radius: 5px;
+			position: absolute;
+			background-color: #ffffff;
+			min-width: 190px;
+			overflow: auto;
+			z-index: 1;
+			padding: 0;
+			margin-top: 5px;
+			a {
+				font-size: 13px;
+				padding: 12px;
+				color: #778088;
+				display: flex;
+				line-height: 16px;
+				align-items: center;
+				text-decoration: none;
+				transition: all .5s ease;
+				-webkit-transition: all .5s ease;
+				-moz-transition: all .5s ease;
+				-ms-transition: all .5s ease;
+				-o-transition: all .5s ease;
+				background: #f1f5fb;
+				box-shadow: rgb(0 0 0 / 11%) 0px 4px 8px;
+				-webkit-box-shadow: rgb(0 0 0 / 11%) 0px 4px 8px;
+				-moz-box-shadow: rgb(0 0 0 / 11%) 0px 4px 8px;
+				-ms-box-shadow: rgb(0 0 0 / 11%) 0px 4px 8px;
+				-o-box-shadow: rgb(0 0 0 / 11%) 0px 4px 8px;
+				&:hover {
+					background: #e9ecef;
+				}
+			}
+			i {
+				color: #778088;
+				margin-right: 5px;
+				font-size: 16px;
+				width: 16px;
+			}
+		}
+	}
+}
